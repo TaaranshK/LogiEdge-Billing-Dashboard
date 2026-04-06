@@ -50,6 +50,7 @@ npm start
 ### Backend API Endpoints
 
 #### Upload File
+
 ```javascript
 POST /api/storage/upload
 Content-Type: application/json
@@ -62,6 +63,7 @@ Content-Type: application/json
 ```
 
 Response:
+
 ```json
 {
   "success": true,
@@ -71,6 +73,7 @@ Response:
 ```
 
 #### Delete File
+
 ```javascript
 DELETE /api/storage/delete
 Content-Type: application/json
@@ -82,13 +85,15 @@ Content-Type: application/json
 ```
 
 #### List Files
+
 ```javascript
 GET /api/storage/list/invoices?path=2026/04/
 ```
 
 #### Get Public URL
+
 ```javascript
-GET /api/storage/url/invoices/invoice-2026-04-06.pdf
+GET / api / storage / url / invoices / invoice - 2026 - 04 - (06).pdf;
 ```
 
 ### Frontend Usage
@@ -100,8 +105,8 @@ import {
   uploadToStorage,
   deleteFromStorage,
   listStorageFiles,
-  getStorageURL
-} from '../../API/storageapi'
+  getStorageURL,
+} from "../../API/storageapi";
 ```
 
 #### Upload Invoice
@@ -110,20 +115,20 @@ import {
 const handleUploadInvoice = async (file) => {
   try {
     const result = await uploadToStorage(
-      'invoices',
+      "invoices",
       `invoice-${invoiceId}.pdf`,
-      file
-    )
+      file,
+    );
 
     if (result.success) {
-      console.log('Uploaded:', result.url)
+      console.log("Uploaded:", result.url);
       // Save URL to database
-      saveInvoiceURL(invoiceId, result.url)
+      saveInvoiceURL(invoiceId, result.url);
     }
   } catch (error) {
-    console.error('Upload failed:', error)
+    console.error("Upload failed:", error);
   }
-}
+};
 ```
 
 #### Delete Invoice
@@ -131,14 +136,14 @@ const handleUploadInvoice = async (file) => {
 ```javascript
 const handleDeleteInvoice = async (invoiceId) => {
   const result = await deleteFromStorage(
-    'invoices',
-    `invoice-${invoiceId}.pdf`
-  )
+    "invoices",
+    `invoice-${invoiceId}.pdf`,
+  );
 
   if (result.success) {
-    console.log('Deleted successfully')
+    console.log("Deleted successfully");
   }
-}
+};
 ```
 
 #### List Customer Documents
@@ -146,15 +151,15 @@ const handleDeleteInvoice = async (invoiceId) => {
 ```javascript
 const handleListDocs = async (customerId) => {
   const result = await listStorageFiles(
-    'customer-docs',
-    `customer-${customerId}/`
-  )
+    "customer-docs",
+    `customer-${customerId}/`,
+  );
 
   if (result.success) {
-    console.log('Files:', result.files) // Array of files
-    console.log('Count:', result.count)
+    console.log("Files:", result.files); // Array of files
+    console.log("Count:", result.count);
   }
-}
+};
 ```
 
 ## Current Features
@@ -163,7 +168,7 @@ const handleListDocs = async (customerId) => {
 ✅ **File Upload** - Upload from frontend  
 ✅ **Public URLs** - Generate shareable links  
 ✅ **File Management** - Delete and list files  
-✅ **Async Initialization** - Graceful fallback if credentials missing  
+✅ **Async Initialization** - Graceful fallback if credentials missing
 
 ## Future Enhancements
 
@@ -176,20 +181,24 @@ const handleListDocs = async (customerId) => {
 ## Troubleshooting
 
 ### "Supabase credentials not configured"
+
 - Add `SUPABASE_URL` and `SUPABASE_ANON_KEY` to `backend/.env`
 - Restart backend: `npm start`
 
 ### "Upload failed: 401"
+
 - Check that API key is correct
 - Verify bucket exists and is accessible
 
 ### "CORS error"
+
 - In Supabase, go to Settings → CORS
 - Add your frontend URL: `http://localhost:5174`
 
 ## Security Notes
 
 ⚠️ **Important:**
+
 - Never commit real API keys to git
 - Use `.env.example` as template
 - Rotate keys regularly in Supabase dashboard
