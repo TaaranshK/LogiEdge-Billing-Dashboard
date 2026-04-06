@@ -1,10 +1,12 @@
 # Updated Render Deployment - Frontend Fix
 
 ## The Problem
+
 Static sites on Render don't automatically route SPA requests to index.html.
 "Cannot GET /" error appears because Render tries to find literal `/` file.
 
 ## The Solution
+
 Deploy frontend as a **Web Service** instead of **Static Site**.
 
 ---
@@ -12,25 +14,27 @@ Deploy frontend as a **Web Service** instead of **Static Site**.
 ## Updated Frontend Deployment Steps
 
 ### Go Back to Render Dashboard
+
 1. Delete the old Frontend Static Site (if exists)
 2. Create a **NEW Web Service** (not Static Site)
 
 ### Configure New Frontend Web Service
 
-| Field | Value |
-|-------|-------|
-| **Name** | `logiedge-frontend` |
-| **Repository** | `TaaranshK/LogiEdge-Billing-Dashboard` |
-| **Branch** | `main` |
-| **Root Directory** | `frontend/frontend` |
-| **Environment** | `Node` |
-| **Build Command** | `npm install && npm run build` |
-| **Start Command** | `npm start` |
-| **Auto-Deploy** | ON (branch: main) |
+| Field              | Value                                  |
+| ------------------ | -------------------------------------- |
+| **Name**           | `logiedge-frontend`                    |
+| **Repository**     | `TaaranshK/LogiEdge-Billing-Dashboard` |
+| **Branch**         | `main`                                 |
+| **Root Directory** | `frontend/frontend`                    |
+| **Environment**    | `Node`                                 |
+| **Build Command**  | `npm install && npm run build`         |
+| **Start Command**  | `npm start`                            |
+| **Auto-Deploy**    | ON (branch: main)                      |
 
 ### Advanced Settings
 
 **Health Check Path:**
+
 ```
 /
 ```
