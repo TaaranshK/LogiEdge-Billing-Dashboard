@@ -36,5 +36,11 @@ backend/.env
 *.sql.bak
 *.json.bak
 
-# Markdown files
-*.md
+# Markdown files (except README)
+CHANGES_LOG.md
+DEPLOYMENT_CHECKLIST.md
+EXECUTIVE_SUMMARY.md
+MIGRATION_REPORT.md
+PROJECT_STATUS.md
+SETUP_GUIDE.md
+START_HERE.md
