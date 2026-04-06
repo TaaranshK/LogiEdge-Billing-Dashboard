@@ -1,4 +1,4 @@
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000'
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api'
 
 /**
  * Upload file to Supabase storage via backend
@@ -17,7 +17,7 @@ export const uploadToStorage = async (bucket, path, file) => {
         const base64String = reader.result.split(',')[1] // Remove data:...;base64, prefix
         
         try {
-          const response = await fetch(`${API_BASE_URL}/api/storage/upload`, {
+          const response = await fetch(`${API_BASE_URL}/storage/upload`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json'
@@ -63,7 +63,7 @@ export const uploadToStorage = async (bucket, path, file) => {
  */
 export const deleteFromStorage = async (bucket, path) => {
   try {
-    const response = await fetch(`${API_BASE_URL}/api/storage/delete`, {
+    const response = await fetch(`${API_BASE_URL}/storage/delete`, {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json'
@@ -96,7 +96,7 @@ export const listStorageFiles = async (bucket, path = '') => {
   try {
     const encodedPath = encodeURIComponent(path)
     const response = await fetch(
-      `${API_BASE_URL}/api/storage/list/${bucket}/${encodedPath}`,
+      `${API_BASE_URL}/storage/list/${bucket}/${encodedPath}`,
       {
         method: 'GET'
       }
@@ -127,7 +127,7 @@ export const getStorageURL = async (bucket, path) => {
   try {
     const encodedPath = encodeURIComponent(path)
     const response = await fetch(
-      `${API_BASE_URL}/api/storage/url/${bucket}/${encodedPath}`,
+      `${API_BASE_URL}/storage/url/${bucket}/${encodedPath}`,
       {
         method: 'GET'
       }
