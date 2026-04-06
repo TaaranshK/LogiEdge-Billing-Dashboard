@@ -29,7 +29,17 @@ const app = express()
 //basically This Code Runs between Request and Response
 // Every Request Pass Through theses befoe reachin The Routes
 
-app.use(cors())
+// CORS Configuration - Allow frontend from Vercel, Render, and localhost
+app.use(cors({
+  origin: [
+    'http://localhost:5173',
+    'http://localhost:5174',
+    'https://logiedge.vercel.app',
+    /https:\/\/.*\.vercel\.app$/, // Allow all Vercel preview URLs
+    'https://logiedge-frontend.onrender.com'
+  ],
+  credentials: true
+}))
 
 // parse/read The Incoming JSON request Bodies 
 app.use(express.json())
