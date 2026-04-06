@@ -6,14 +6,15 @@ Your project uses **React + Vite** (Frontend) + **Express** (Backend), not Next.
 
 ### Environment Variables
 
-| Component | File | Variable | Format |
-|-----------|------|----------|--------|
-| **Frontend (Vite)** | `frontend/frontend/.env.local` | `VITE_SUPABASE_URL` | `VITE_` prefix required |
-| **Frontend (Vite)** | `frontend/frontend/.env.local` | `VITE_SUPABASE_ANON_KEY` | `VITE_` prefix required |
-| **Backend (Express)** | `backend/.env` | `SUPABASE_URL` | No prefix needed |
-| **Backend (Express)** | `backend/.env` | `SUPABASE_ANON_KEY` | No prefix needed |
+| Component             | File                           | Variable                 | Format                  |
+| --------------------- | ------------------------------ | ------------------------ | ----------------------- |
+| **Frontend (Vite)**   | `frontend/frontend/.env.local` | `VITE_SUPABASE_URL`      | `VITE_` prefix required |
+| **Frontend (Vite)**   | `frontend/frontend/.env.local` | `VITE_SUPABASE_ANON_KEY` | `VITE_` prefix required |
+| **Backend (Express)** | `backend/.env`                 | `SUPABASE_URL`           | No prefix needed        |
+| **Backend (Express)** | `backend/.env`                 | `SUPABASE_ANON_KEY`      | No prefix needed        |
 
 ### Vite Note
+
 Vite only exposes variables with `VITE_` prefix to the browser. This is why frontend uses `VITE_SUPABASE_*` while backend uses `SUPABASE_*`.
 
 ---
@@ -21,6 +22,7 @@ Vite only exposes variables with `VITE_` prefix to the browser. This is why fron
 ## What's Already Set Up ✅
 
 ### Backend Files
+
 ```
 backend/
 ├── src/
@@ -34,6 +36,7 @@ backend/
 ```
 
 ### Frontend Files
+
 ```
 frontend/frontend/
 ├── src/
@@ -91,56 +94,50 @@ VITE_API_URL=http://localhost:5000
 ### Frontend Example (React)
 
 ```javascript
-import { uploadToStorage, deleteFromStorage } from '../../API/storageapi'
+import { uploadToStorage, deleteFromStorage } from "../../API/storageapi";
 
 export const InvoiceUpload = () => {
   const handleUpload = async (e) => {
-    const file = e.target.files[0]
-    
+    const file = e.target.files[0];
+
     // Upload to Supabase
     const result = await uploadToStorage(
-      'invoices',
+      "invoices",
       `invoice-${Date.now()}.pdf`,
-      file
-    )
-    
-    if (result.success) {
-      console.log('Public URL:', result.url)
-      // Save to database
-      saveInvoiceURL(result.url)
-    } else {
-      console.error('Upload failed:', result.error)
-    }
-  }
+      file,
+    );
 
-  return (
-    <input 
-      type="file" 
-      accept=".pdf"
-      onChange={handleUpload}
-    />
-  )
-}
+    if (result.success) {
+      console.log("Public URL:", result.url);
+      // Save to database
+      saveInvoiceURL(result.url);
+    } else {
+      console.error("Upload failed:", result.error);
+    }
+  };
+
+  return <input type="file" accept=".pdf" onChange={handleUpload} />;
+};
 ```
 
 ### Backend Example (Express)
 
 ```javascript
-router.post('/invoices/:id/upload', async (req, res) => {
-  const { file } = req.body // base64 file data
-  
+router.post("/invoices/:id/upload", async (req, res) => {
+  const { file } = req.body; // base64 file data
+
   const result = await uploadFile(
-    'invoices',
+    "invoices",
     `invoice-${req.params.id}.pdf`,
-    Buffer.from(file, 'base64')
-  )
+    Buffer.from(file, "base64"),
+  );
 
   if (result.success) {
-    res.json({ success: true, url: result.url })
+    res.json({ success: true, url: result.url });
   } else {
-    res.status(400).json({ success: false, error: result.error })
+    res.status(400).json({ success: false, error: result.error });
   }
-})
+});
 ```
 
 ---
@@ -150,6 +147,7 @@ router.post('/invoices/:id/upload', async (req, res) => {
 All endpoints are at `http://localhost:5000/api/storage/`
 
 ### 1. Upload File
+
 ```
 POST /api/storage/upload
 Content-Type: application/json
@@ -163,12 +161,13 @@ Content-Type: application/json
 Response:
 {
   "success": true,
-  "url": "https://...", 
+  "url": "https://...",
   "path": "invoice-12345.pdf"
 }
 ```
 
 ### 2. Delete File
+
 ```
 DELETE /api/storage/delete
 Content-Type: application/json
@@ -186,6 +185,7 @@ Response:
 ```
 
 ### 3. List Files
+
 ```
 GET /api/storage/list/invoices?path=2026/04/
 
@@ -198,6 +198,7 @@ Response:
 ```
 
 ### 4. Get Public URL
+
 ```
 GET /api/storage/url/invoices/invoice-12345.pdf
 
@@ -231,18 +232,22 @@ Visit: http://localhost:5173
 ## Troubleshooting
 
 ### "Supabase credentials not configured"
+
 - ❌ Missing `SUPABASE_URL` or `SUPABASE_ANON_KEY` in `.env`
 - ✅ Add credentials and restart backend: `npm start`
 
 ### "CORS error when uploading"
+
 - Go to Supabase Settings → CORS
 - Add: `http://localhost:5174`
 
 ### "401 Unauthorized"
+
 - ❌ Wrong API key
 - ✅ Copy exact keys from Supabase → Settings → API
 
 ### "Cannot find file"
+
 - ❌ Bucket doesn't exist
 - ✅ Create bucket in Supabase Storage first
 
@@ -251,6 +256,7 @@ Visit: http://localhost:5173
 ## Security Best Practices
 
 ⚠️ **Remember:**
+
 1. **Never commit `.env` files** to git
 2. **Use `.env.example`** as template
 3. **Rotate API keys** regularly

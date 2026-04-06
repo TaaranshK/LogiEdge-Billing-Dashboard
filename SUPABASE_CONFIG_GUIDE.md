@@ -32,11 +32,13 @@ SUPABASE_ANON_KEY=your-anon-key-here
 ## Files Already Set Up
 
 ✅ **Backend:**
+
 - `src/config/supabase.js` - Supabase client initialization
 - `src/services/storageService.js` - File operations (upload, delete, list)
 - `src/routes/storageRoutes.js` - API endpoints
 
 ✅ **Frontend:**
+
 - `src/API/storageapi.js` - React-friendly Supabase wrapper
 
 ## Usage
@@ -44,17 +46,13 @@ SUPABASE_ANON_KEY=your-anon-key-here
 ### Frontend (React)
 
 ```javascript
-import { uploadToStorage } from '../../API/storageapi'
+import { uploadToStorage } from "../../API/storageapi";
 
 // Upload invoice
-const result = await uploadToStorage(
-  'invoices',
-  'invoice-12345.pdf',
-  file
-)
+const result = await uploadToStorage("invoices", "invoice-12345.pdf", file);
 
 if (result.success) {
-  console.log('URL:', result.url)
+  console.log("URL:", result.url);
 }
 ```
 
@@ -63,15 +61,15 @@ if (result.success) {
 Call the API directly:
 
 ```javascript
-const response = await fetch('http://localhost:5000/api/storage/upload', {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
+const response = await fetch("http://localhost:5000/api/storage/upload", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
   body: JSON.stringify({
-    bucket: 'invoices',
-    path: 'invoice-12345.pdf',
-    file: base64Data
-  })
-})
+    bucket: "invoices",
+    path: "invoice-12345.pdf",
+    file: base64Data,
+  }),
+});
 ```
 
 ## Next Actions
@@ -83,6 +81,7 @@ const response = await fetch('http://localhost:5000/api/storage/upload', {
    - New bucket: `customer-docs` (public)
    - New bucket: `attachments` (public)
 3. **Restart servers:**
+
    ```bash
    # Backend
    cd backend && npm start
@@ -90,15 +89,17 @@ const response = await fetch('http://localhost:5000/api/storage/upload', {
    # Frontend (new terminal)
    cd frontend/frontend && npm run dev
    ```
+
 4. **Test upload:**
+
    ```javascript
    // In React component
-   import { uploadToStorage } from '../../API/storageapi'
-   
+   import { uploadToStorage } from "../../API/storageapi";
+
    const handleUpload = async (file) => {
-     const result = await uploadToStorage('invoices', file.name, file)
-     console.log(result)
-   }
+     const result = await uploadToStorage("invoices", file.name, file);
+     console.log(result);
+   };
    ```
 
 ---
