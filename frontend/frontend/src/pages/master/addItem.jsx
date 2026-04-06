@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { useNavigate }     from 'react-router-dom'
 import { createItem }      from '../../API/itemapi'
-import './Master.css'
+import './master.css'
 
 
 const AddItem = () => {

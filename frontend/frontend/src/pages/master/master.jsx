@@ -1,6 +1,6 @@
 import React    from 'react'
 import { useNavigate } from 'react-router-dom'
-import './Master.css'
+import './master.css'
 
 
 

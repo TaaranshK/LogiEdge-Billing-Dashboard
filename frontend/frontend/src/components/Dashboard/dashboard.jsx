@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { getAllInvoices, getInvoiceById, getInvoicesByCustomer } from '../../API/billingapi'
 import { getAllCustomers } from '../../API/customerAPI'
 import { formatCurrency, formatDate, getStatusClass } from '../../utils/helper'
-import './Dashboard.css'
+import './dashboard.css'
 
 
 

@@ -3,7 +3,7 @@ import { useNavigate }   from 'react-router-dom'
 import { getAllItems }    from '../../API/itemapi'
 import { getStatusClass } from '../../utils/helper'
 import { formatCurrency } from '../../utils/helper'
-import './Master.css'
+import './master.css'
 
 const ItemCard = ({ item }) => {
   return (

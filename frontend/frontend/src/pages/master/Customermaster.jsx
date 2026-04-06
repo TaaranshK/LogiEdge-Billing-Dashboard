@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { getAllCustomers } from '../../API/customerAPI'
 import { getStatusClass  } from '../../utils/helper'
-import './Master.css'
+import './master.css'
 
 
 const CustomerCard = ({ customer }) => {
