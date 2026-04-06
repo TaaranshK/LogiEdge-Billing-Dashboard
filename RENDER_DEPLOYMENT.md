@@ -1,6 +1,7 @@
 # Deploy LogiEdge to Render - Complete Guide
 
 ## Prerequisites
+
 - Render account: https://render.com (sign up free)
 - GitHub repository: ✅ https://github.com/TaaranshK/LogiEdge-Billing-Dashboard
 - MySQL database (local or managed)
@@ -54,6 +55,7 @@ This creates `dist/` folder with optimized production files.
    - Start Command: `npm start`
 
 4. **Environment Variables** (Add these):
+
    ```
    PORT=10000
    DB_HOST=your-mysql-host.com
@@ -110,6 +112,7 @@ npm run build
    - Publish Directory: `dist`
 
 4. **Environment Variables:**
+
    ```
    VITE_API_URL=https://logiedge-backend.onrender.com
    VITE_SUPABASE_URL=https://tipklyvuyztquifdbhyi.supabase.co
@@ -130,24 +133,29 @@ The backend needs to allow requests from your frontend domain.
 Edit `backend/src/server.js`:
 
 ```javascript
-const cors = require('cors');
+const cors = require("cors");
 
-app.use(cors({
-  origin: 'https://logiedge-frontend.onrender.com',
-  credentials: true
-}));
+app.use(
+  cors({
+    origin: "https://logiedge-frontend.onrender.com",
+    credentials: true,
+  }),
+);
 ```
 
 Or allow multiple origins:
 
 ```javascript
-app.use(cors({
-  origin: ['https://logiedge-frontend.onrender.com', 'http://localhost:5173'],
-  credentials: true
-}));
+app.use(
+  cors({
+    origin: ["https://logiedge-frontend.onrender.com", "http://localhost:5173"],
+    credentials: true,
+  }),
+);
 ```
 
 Push this change:
+
 ```bash
 git add backend/src/server.js
 git commit -m "Update CORS for Render production"
@@ -163,10 +171,12 @@ Your backend needs to connect to MySQL. Options:
 ### Option A: Use a Managed MySQL Service
 
 **Railway, PlanetScale, or AWS RDS:**
+
 - Get connection credentials
 - Add to Render backend environment variables
 
 ### Option B: Keep Local MySQL
+
 - Must be accessible over internet (not recommended)
 - Better: Set up MySQL on same provider
 
@@ -175,15 +185,19 @@ Your backend needs to connect to MySQL. Options:
 ## Step 7: Test Deployment
 
 1. **Test Backend API:**
+
    ```
    https://logiedge-backend.onrender.com/api/health
    ```
+
    Should return: `{"status":"OK",...}`
 
 2. **Test Frontend:**
+
    ```
    https://logiedge-frontend.onrender.com
    ```
+
    Should load dashboard
 
 3. **Test API Connection:**
@@ -212,6 +226,7 @@ Your backend needs to connect to MySQL. Options:
 ## Environment Variables Needed
 
 ### Backend (Render Environment)
+
 ```
 PORT=10000
 NODE_ENV=production
@@ -225,6 +240,7 @@ SUPABASE_ANON_KEY=sb_publishable_in9eE_GGT9fMWKuS03vnAg_fKz1Ty_X
 ```
 
 ### Frontend (Render Environment)
+
 ```
 VITE_API_URL=https://logiedge-backend.onrender.com
 VITE_SUPABASE_URL=https://tipklyvuyztquifdbhyi.supabase.co
@@ -236,22 +252,27 @@ VITE_SUPABASE_ANON_KEY=sb_publishable_in9eE_GGT9fMWKuS03vnAg_fKz1Ty_X
 ## Troubleshooting
 
 ### "Failed to fetch from API"
+
 - ❌ CORS not configured
 - ✅ Update `backend/src/server.js` and redeploy
 
 ### "Cannot connect to database"
+
 - ❌ Database credentials wrong
 - ✅ Verify DB host, port, user, password in environment
 
 ### "Storage upload fails"
+
 - ❌ Supabase keys expired
 - ✅ Regenerate keys in Supabase dashboard
 
 ### "Blank screen on frontend"
+
 - ❌ API URL pointing to wrong backend
 - ✅ Check `.env.production` has correct backend URL
 
 ### "Timeout on first load"
+
 - ⚠️ Render free tier sleeps after 15 mins inactivity
 - Update to paid plan to prevent sleep, or use pinging service
 
@@ -259,12 +280,12 @@ VITE_SUPABASE_ANON_KEY=sb_publishable_in9eE_GGT9fMWKuS03vnAg_fKz1Ty_X
 
 ## Cost Estimation (Free Tier)
 
-| Service | Cost | Note |
-|---------|------|------|
-| Backend (Web Service) | Free (sleeps after 15 min) | $7/mo for always-on |
-| Frontend (Static Site) | Free | Includes bandwidth |
-| MySQL Database | Free or $$ | Use managed service |
-| Supabase Storage | Free tier generous | 1GB storage included |
+| Service                | Cost                       | Note                 |
+| ---------------------- | -------------------------- | -------------------- |
+| Backend (Web Service)  | Free (sleeps after 15 min) | $7/mo for always-on  |
+| Frontend (Static Site) | Free                       | Includes bandwidth   |
+| MySQL Database         | Free or $$                 | Use managed service  |
+| Supabase Storage       | Free tier generous         | 1GB storage included |
 
 ---
 
@@ -293,7 +314,7 @@ VITE_SUPABASE_ANON_KEY=sb_publishable_in9eE_GGT9fMWKuS03vnAg_fKz1Ty_X
 ✅ `backend/.env.render` - Template for configuration  
 ✅ `package.json` - Correct scripts (npm start)  
 ✅ Supabase integration complete  
-✅ GitHub repository connected  
+✅ GitHub repository connected
 
 ---
 
@@ -302,6 +323,7 @@ VITE_SUPABASE_ANON_KEY=sb_publishable_in9eE_GGT9fMWKuS03vnAg_fKz1Ty_X
 You can now deploy your complete LogiEdge application to Render.
 
 **Next Steps:**
+
 1. Go to render.com
 2. Follow Step 1-4 above
 3. Your app is live! 🚀
