@@ -1,6 +1,6 @@
 // Customer Model - Data Layer for Customers
 // Contains all SQL queries related to the customers table
-// Uses MySQL2 with promise-based API
+// Uses PostgreSQL with node-postgres (pg) library
 
 const pool = require('../config/db');
 
@@ -12,8 +12,8 @@ const getAllCustomers = async () => {
             FROM customers
             ORDER BY created_at DESC
         `;
-        const [rows] = await pool.query(query);
-        return rows;
+        const result = await pool.query(query);
+        return result.rows;
     } catch (error) {
         throw new Error(`Error fetching customers: ${error.message}`);
     }
@@ -25,10 +25,10 @@ const getCustomerById = async (id) => {
         const query = `
             SELECT id, customer_name, address, pan_number, gst_number, status, created_at
             FROM customers
-            WHERE id = ?
+            WHERE id = $1
         `;
-        const [rows] = await pool.query(query, [id]);
-        return rows[0];
+        const result = await pool.query(query, [id]);
+        return result.rows[0];
     } catch (error) {
         throw new Error(`Error fetching customer: ${error.message}`);
     }
@@ -47,7 +47,8 @@ const createCustomer = async (customerData) => {
     try {
         const query = `
             INSERT INTO customers (customer_name, address, pan_number, gst_number, status)
-            VALUES (?, ?, ?, ?, ?)
+            VALUES ($1, $2, $3, $4, $5)
+            RETURNING id, customer_name, address, pan_number, gst_number, status, created_at
         `;
         const values = [
             customer_name,
@@ -57,18 +58,12 @@ const createCustomer = async (customerData) => {
             status || 'Active'
         ];
 
-        const [result] = await pool.query(query, values);
+        const result = await pool.query(query, values);
 
-        // Return the newly created customer with the generated ID
-        return {
-            id: result.insertId,
-            customer_name,
-            address: address || null,
-            pan_number: pan_number || null,
-            gst_number: gst_number || null,
-            status: status || 'Active',
-            created_at: new Date().toISOString()
-        };
+        // Return the newly created customer with the generated ID from RETURNING clause
+        // Note: For PostgreSQL, use RETURNING clause to get the inserted ID
+        const customer = result.rows[0];
+        return customer;
     } catch (error) {
         throw new Error(`Error creating customer: ${error.message}`);
     }
@@ -79,12 +74,12 @@ const updateCustomerStatus = async (id, status) => {
     try {
         const query = `
             UPDATE customers
-            SET status = ?
-            WHERE id = ?
+            SET status = $1
+            WHERE id = $2
         `;
-        const [result] = await pool.query(query, [status, id]);
+        const result = await pool.query(query, [status, id]);
 
-        if (result.affectedRows === 0) {
+        if (result.rowCount === 0) {
             return null;
         }
 

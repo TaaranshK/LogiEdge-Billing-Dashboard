@@ -1,6 +1,6 @@
 // Billing Model - Data Layer for Invoices
 // Contains SQL queries for invoice management with transaction support
-// Uses MySQL2 with promise-based API
+// Uses PostgreSQL with node-postgres (pg) library
 
 const pool = require('../config/db');
 
@@ -16,16 +16,17 @@ const createInvoice = async (invoiceData) => {
         items
     } = invoiceData;
 
-    const connection = await pool.getConnection();
+    const client = await pool.connect();
 
     try {
-        await connection.beginTransaction();
+        await client.query('BEGIN');
 
         const invoiceQuery = `
             INSERT INTO invoices
                 (invoice_id, customer_id, subtotal, gst_rate, gst_amount, total_amount)
             VALUES
-                (?, ?, ?, ?, ?, ?)
+                ($1, $2, $3, $4, $5, $6)
+            RETURNING id, invoice_id, customer_id, subtotal, gst_rate, gst_amount, total_amount, created_at
         `;
 
         const invoiceValues = [
@@ -37,7 +38,7 @@ const createInvoice = async (invoiceData) => {
             total_amount
         ];
 
-        const [invoiceResult] = await connection.query(invoiceQuery, invoiceValues);
+        const invoiceResult = await client.query(invoiceQuery, invoiceValues);
 
         // Insert line items
         for (const item of items) {
@@ -45,7 +46,7 @@ const createInvoice = async (invoiceData) => {
                 INSERT INTO invoice_items
                     (invoice_id, item_id, item_name, quantity, unit_price, total_price)
                 VALUES
-                    (?, ?, ?, ?, ?, ?)
+                    ($1, $2, $3, $4, $5, $6)
             `;
 
             const itemValues = [
@@ -57,28 +58,19 @@ const createInvoice = async (invoiceData) => {
                 item.total_price
             ];
 
-            await connection.query(itemQuery, itemValues);
+            await client.query(itemQuery, itemValues);
         }
 
-        await connection.commit();
+        await client.query('COMMIT');
 
-        // Return the created invoice
-        return {
-            id: invoiceResult.insertId,
-            invoice_id,
-            customer_id,
-            subtotal,
-            gst_rate,
-            gst_amount,
-            total_amount,
-            created_at: new Date().toISOString()
-        };
+        // Return the created invoice from RETURNING clause
+        return invoiceResult.rows[0];
 
     } catch (error) {
-        await connection.rollback();
+        await client.query('ROLLBACK');
         throw new Error(`Error creating invoice: ${error.message}`);
     } finally {
-        connection.release();
+        client.release();
     }
 };
 
@@ -100,8 +92,8 @@ const getAllInvoices = async () => {
             ORDER BY i.created_at DESC
         `;
 
-        const [rows] = await pool.query(query);
-        return rows;
+        const result = await pool.query(query);
+        return result.rows;
     } catch (error) {
         throw new Error(`Error fetching invoices: ${error.message}`);
     }
@@ -126,16 +118,16 @@ const getInvoiceById = async (invoiceId) => {
                 i.created_at
             FROM invoices i
             JOIN customers c ON i.customer_id = c.id
-            WHERE i.invoice_id = ?
+            WHERE i.invoice_id = $1
         `;
 
-        const [invoiceRows] = await pool.query(invoiceQuery, [invoiceId]);
+        const invoiceResult = await pool.query(invoiceQuery, [invoiceId]);
 
-        if (invoiceRows.length === 0) {
+        if (invoiceResult.rows.length === 0) {
             return null;
         }
 
-        const invoice = invoiceRows[0];
+        const invoice = invoiceResult.rows[0];
 
         // Query 2: Get all line items
         const itemsQuery = `
@@ -147,12 +139,12 @@ const getInvoiceById = async (invoiceId) => {
                 unit_price,
                 total_price
             FROM invoice_items
-            WHERE invoice_id = ?
+            WHERE invoice_id = $1
             ORDER BY id ASC
         `;
 
-        const [itemRows] = await pool.query(itemsQuery, [invoiceId]);
-        invoice.items = itemRows;
+        const itemResult = await pool.query(itemsQuery, [invoiceId]);
+        invoice.items = itemResult.rows;
 
         return invoice;
     } catch (error) {
@@ -175,12 +167,12 @@ const getInvoicesByCustomer = async (customerId) => {
                 i.created_at
             FROM invoices i
             JOIN customers c ON i.customer_id = c.id
-            WHERE i.customer_id = ?
+            WHERE i.customer_id = $1
             ORDER BY i.created_at DESC
         `;
 
-        const [rows] = await pool.query(query, [customerId]);
-        return rows;
+        const result = await pool.query(query, [customerId]);
+        return result.rows;
     } catch (error) {
         throw new Error(`Error fetching customer invoices: ${error.message}`);
     }
@@ -191,11 +183,11 @@ const checkInvoiceIdExists = async (invoiceId) => {
     try {
         const query = `
             SELECT invoice_id FROM invoices
-            WHERE invoice_id = ?
+            WHERE invoice_id = $1
         `;
 
-        const [rows] = await pool.query(query, [invoiceId]);
-        return rows.length > 0;
+        const result = await pool.query(query, [invoiceId]);
+        return result.rows.length > 0;
     } catch (error) {
         throw new Error(`Error checking invoice ID: ${error.message}`);
     }

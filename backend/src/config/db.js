@@ -1,26 +1,26 @@
-// This File Connects with MySQL Database and exports connection pool
-// 'mysql2/promise' provides Promise-based MySQL client for Node.js
+// PostgreSQL Connection Pool for Supabase
+// 'pg' provides Promise-based PostgreSQL client for Node.js
 
-const mysql = require('mysql2/promise');
+const { Pool } = require('pg');
 
 // Create connection pool for better performance
 const poolConfig = {
     host: process.env.DB_HOST || 'localhost',
-    port: process.env.DB_PORT || 3306,
-    database: process.env.DB_NAME || 'logiedge_billing',
-    user: process.env.DB_USER || 'root',
-    waitForConnections: true,
-    connectionLimit: 10,
-    queueLimit: 0,
-    enableKeepAlive: true,
-    keepAliveInitialDelayMs: 0
+    port: process.env.DB_PORT || 5432,
+    database: process.env.DB_NAME || 'postgres',
+    user: process.env.DB_USER || 'postgres',
+    password: process.env.DB_PASSWORD || '',
+    max: 20,
+    idleTimeoutMillis: 30000,
+    connectionTimeoutMillis: 2000,
+    ssl: process.env.DB_HOST && process.env.DB_HOST.includes('supabase') ? { rejectUnauthorized: false } : false
 };
 
-// Only add password if provided in .env
-if (process.env.DB_PASSWORD) {
-    poolConfig.password = process.env.DB_PASSWORD;
-}
+const pool = new Pool(poolConfig);
 
-const pool = mysql.createPool(poolConfig);
+// Test connection on startup
+pool.on('error', (err) => {
+    console.error('Unexpected error on idle client', err);
+});
 
 module.exports = pool;

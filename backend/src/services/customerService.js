@@ -32,7 +32,7 @@ const fetchCustomerById = async (id) => {
 const addNewCustomer = async (CustomerData) => {
     const {customer_name , address , pan_number , gst_number , status}  = CustomerData;
 
-    if(!customer_data || customer_name.trim() == '') {
+    if(!customer_name || customer_name.trim() == '') {
         const error = new Error('Customer name is Required');
         error.statusCode = 400;
         throw error;     

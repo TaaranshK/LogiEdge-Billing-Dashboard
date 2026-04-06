@@ -1,7 +1,7 @@
 {
   "name": "logiEdge-backend",
   "version": "1.0.0",
-  "description": "Backend server for LogiEdge Billing Dashboard - MySQL Version",
+  "description": "Backend server for LogiEdge Billing Dashboard - PostgreSQL/Supabase Version",
   "main": "src/server.js",
   "scripts": {
     "start": "node src/server.js",
@@ -12,7 +12,7 @@
     "cors": "^2.8.6",
     "dotenv": "^17.4.0",
     "express": "^5.2.1",
-    "mysql2": "^3.9.0"
+    "pg": "^8.11.0"
   },
   "devDependencies": {
     "nodemon": "^3.1.14"

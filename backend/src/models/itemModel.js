@@ -1,6 +1,6 @@
 // Item Model - Data Layer for Items
 // Contains all SQL queries related to the items table
-// Uses MySQL2 with promise-based API
+// Uses PostgreSQL with node-postgres (pg) library
 
 const pool = require('../config/db');
 
@@ -12,8 +12,8 @@ const getAllItems = async () => {
             FROM items
             ORDER BY created_at DESC
         `;
-        const [rows] = await pool.query(query);
-        return rows;
+        const result = await pool.query(query);
+        return result.rows;
     } catch (error) {
         throw new Error(`Error fetching items: ${error.message}`);
     }
@@ -28,8 +28,8 @@ const getActiveItems = async () => {
             WHERE status = 'Active'
             ORDER BY item_name ASC
         `;
-        const [rows] = await pool.query(query);
-        return rows;
+        const result = await pool.query(query);
+        return result.rows;
     } catch (error) {
         throw new Error(`Error fetching active items: ${error.message}`);
     }
@@ -41,10 +41,10 @@ const getItemById = async (id) => {
         const query = `
             SELECT id, item_name, selling_price, status, created_at
             FROM items
-            WHERE id = ?
+            WHERE id = $1
         `;
-        const [rows] = await pool.query(query, [id]);
-        return rows[0];
+        const result = await pool.query(query, [id]);
+        return result.rows[0];
     } catch (error) {
         throw new Error(`Error fetching item: ${error.message}`);
     }
@@ -57,7 +57,8 @@ const createItem = async (itemData) => {
     try {
         const query = `
             INSERT INTO items (item_name, selling_price, status)
-            VALUES (?, ?, ?)
+            VALUES ($1, $2, $3)
+            RETURNING id, item_name, selling_price, status, created_at
         `;
         const values = [
             item_name,
@@ -65,16 +66,10 @@ const createItem = async (itemData) => {
             status || 'Active'
         ];
 
-        const [result] = await pool.query(query, values);
+        const result = await pool.query(query, values);
 
-        // Return the newly created item
-        return {
-            id: result.insertId,
-            item_name,
-            selling_price,
-            status: status || 'Active',
-            created_at: new Date().toISOString()
-        };
+        // Return the newly created item from RETURNING clause
+        return result.rows[0];
     } catch (error) {
         throw new Error(`Error creating item: ${error.message}`);
     }
@@ -85,12 +80,12 @@ const updateItemStatus = async (id, status) => {
     try {
         const query = `
             UPDATE items
-            SET status = ?
-            WHERE id = ?
+            SET status = $1
+            WHERE id = $2
         `;
-        const [result] = await pool.query(query, [status, id]);
+        const result = await pool.query(query, [status, id]);
 
-        if (result.affectedRows === 0) {
+        if (result.rowCount === 0) {
             return null;
         }
 
