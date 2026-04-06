@@ -10,6 +10,7 @@ const cors = require('cors')
 const customerRoutes = require('./routes/customerRoutes');
 const itemRoutes = require('./routes/itemRoutes');
 const billingRoutes = require('./routes/billingRoutes');
+const storageRoutes = require('./routes/storageRoutes');
 
 // Import the global error handler
 const errorHandler = require('./middlewares/errorHandler');
@@ -43,6 +44,7 @@ app.use(express.json())
 app.use('/api/customers' , customerRoutes);
 app.use('/api/items' , itemRoutes);
 app.use('/api/billing' , billingRoutes);
+app.use('/api/storage', storageRoutes);
 
 // Health Check Routes 
 
