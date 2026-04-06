@@ -13,7 +13,7 @@ const billingRoutes = require('./routes/billingRoutes');
 const storageRoutes = require('./routes/storageRoutes');
 
 // Import the global error handler
-const errorHandler = require('./middlewares/errorHandler');
+const errorHandler = require('./middlewares/errorhandler');
 
 // Import database initialization
 const initializeDatabase = require('./config/dbInit');
